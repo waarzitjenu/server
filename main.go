@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"runtime"
 	"strconv"
+
+	"github.com/asdine/storm"
 )
 
 // LocationUpdate contains the location update data types as retrieved from the OsmAnd app by default
@@ -19,17 +21,30 @@ type LocationUpdate struct {
 	Speed     float64 `json:"speed,omitempty"`
 }
 
+// Database entry. Timestamp is indexed to allow fast queries
+// based on time ranges
+type Entry struct {
+	ID        int    `storm:"id,increment"`
+	Timestamp uint64 `storm:"index"`
+	Data      LocationUpdate
+}
+
 var (
-	serverPort        uint16 = 8080 // TODO: Make user-selectable
-	lastKnownLocation LocationUpdate
+	serverPort uint16 = 8080 // TODO: Make user-selectable
 )
 
 func main() {
-	defer listen()
+	db, err := storm.Open("./loc.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer db.Close()
+	defer listen(db)
 }
 
 /* listen spins up a webserver and listens for incoming connections */
-func listen() {
+func listen(db *storm.DB) {
 	serverIdentifier := fmt.Sprintf("%s on %s %s", runtime.Version(), runtime.GOOS, runtime.GOARCH)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -43,9 +58,30 @@ func listen() {
 		w.Header().Add("Server", serverIdentifier)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(200)
-		responseData, err := json.Marshal(&lastKnownLocation)
+
+		var entry []Entry
+		db.All(&entry, storm.Limit(1), storm.Reverse())
+
+		responseData, err := json.Marshal(entry[0])
 		if err != nil {
 			log.Fatal(err)
+		}
+		w.Write(responseData)
+	})
+
+	http.HandleFunc("/retrieveMulti", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Server", serverIdentifier)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(200)
+
+		cnt, _ := strconv.ParseInt(r.URL.Query().Get("count"), 10, 64)
+		var entries []Entry
+
+		db.All(&entries, storm.Limit(int(cnt)), storm.Reverse())
+		responseData, err := json.Marshal(entries)
+		if err != nil {
+			log.Fatal(err)
+			log.Fatal(responseData)
 		}
 		w.Write(responseData)
 	})
@@ -73,24 +109,27 @@ func listen() {
 		}
 
 		// Checks if the data (in 'locationUpdate') conforms to the types of the struct 'LocationUpdate'
-		_, err := json.Marshal(&locationUpdate)
+		_, err := json.Marshal(locationUpdate)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		lastKnownLocation = locationUpdate
-		location, err := json.Marshal(&lastKnownLocation)
+		// Prepare and insert into DB
+		entry := Entry{
+			Timestamp: locationUpdate.Timestamp,
+			Data:      locationUpdate,
+		}
+		err = db.Save(&entry)
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		fmt.Println(string(location[:]))
 	})
 
 	var listenAddr string = fmt.Sprintf(":%d", serverPort)
+	fmt.Printf("Starting server at port: %v\n", serverPort)
+
 	err := http.ListenAndServe(listenAddr, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 }
