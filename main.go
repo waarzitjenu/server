@@ -105,8 +105,7 @@ func listen(db *storm.DB) {
 		db.All(&entries, storm.Limit(int(cnt)), storm.Reverse())
 		responseData, err := json.Marshal(entries)
 		if err != nil {
-			log.Fatal(err)
-			log.Fatal(responseData)
+			log.Fatal("Processing entries from database failed", err)
 		}
 		w.Write(responseData)
 	})
@@ -146,7 +145,7 @@ func listen(db *storm.DB) {
 		}
 		err = db.Save(&entry)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("Saving entry to database failed", err)
 		}
 	})
 
