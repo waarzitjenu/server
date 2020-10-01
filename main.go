@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"runtime"
 	"strconv"
 
@@ -30,11 +31,14 @@ type Entry struct {
 }
 
 var (
-	serverPort uint16 = 8080 // TODO: Make user-selectable
+	serverPort   uint16 = 8080 // TODO: Make user-selectable
+	databasePath string = "./database"
 )
 
 func main() {
-	db, err := storm.Open("./loc.db")
+	createDirIfNotExist(databasePath)
+
+	db, err := storm.Open(databasePath + "/locations.db")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -131,5 +135,15 @@ func listen(db *storm.DB) {
 	err := http.ListenAndServe(listenAddr, nil)
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+// createDirIfNotExist first checks if a directory exists and creates it if does not exist
+func createDirIfNotExist(dir string) {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		err = os.MkdirAll(dir, 0755)
+		if err != nil {
+			panic(err)
+		}
 	}
 }
