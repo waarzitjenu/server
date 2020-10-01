@@ -78,7 +78,16 @@ func listen(db *storm.DB) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(200)
 
-		cnt, _ := strconv.ParseInt(r.URL.Query().Get("count"), 10, 64)
+		var cnt uint16 = 10
+		if len(r.URL.Query().Get("count")) > 0 {
+			parsedCountValue, err := strconv.ParseUint(r.URL.Query().Get("count"), 10, 16)
+			if err != nil {
+				log.Println("Error parsing query parameter 'count'", err)
+			} else {
+				cnt = uint16(parsedCountValue)
+			}
+		}
+
 		var entries []Entry
 
 		db.All(&entries, storm.Limit(int(cnt)), storm.Reverse())
