@@ -69,7 +69,7 @@ func listen(db *storm.DB) {
 		w.Write(responseData)
 	})
 
-	http.HandleFunc("/retrieveMulti", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/retrieve/multi", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Server", serverIdentifier)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(200)
