@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -31,13 +32,23 @@ type Entry struct {
 }
 
 var (
-	serverPort   uint16 = 8080 // TODO: Make user-selectable
+	serverPort   uint
 	databasePath string = "./database"
 )
 
-func main() {
-	createDirIfNotExist(databasePath)
+const (
+	defaultPort        = 8080
+	portArgDescription = "The port used to run the application. Defaults to 8080"
+)
 
+func main() {
+	// let the user pick the port by using "port" or "p" option
+	flag.UintVar(&serverPort, "port", defaultPort, portArgDescription)
+	flag.UintVar(&serverPort, "p", defaultPort, portArgDescription+" (shorthand)")
+	flag.Parse()
+
+	createDirIfNotExist(databasePath)
+  
 	db, err := storm.Open(databasePath + "/locations.db")
 	if err != nil {
 		log.Fatal(err)
