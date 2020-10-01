@@ -61,15 +61,27 @@ func listen(db *storm.DB) {
 	http.HandleFunc("/retrieve", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Server", serverIdentifier)
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(200)
 
 		var entry []Entry
 		db.All(&entry, storm.Limit(1), storm.Reverse())
 
-		responseData, err := json.Marshal(entry[0])
-		if err != nil {
-			log.Fatal(err)
+		var responseData []byte
+
+		if len(entry) == 0 {
+			// There is no data. Let's return HTTP Status 204: No Content
+			w.WriteHeader(204) // The server successfully processed the request, but is not returning any content.
+		} else {
+			// There is data. Let's process it.
+			processedEntry, err := json.Marshal(entry[0])
+			if err != nil {
+				w.WriteHeader(500) // HTTP 500 Internal Server Error
+				log.Println("Error retrieving last database entry", err)
+			} else {
+				w.WriteHeader(200) // HTTP 200 OK
+				responseData = processedEntry
+			}
 		}
+
 		w.Write(responseData)
 	})
 
