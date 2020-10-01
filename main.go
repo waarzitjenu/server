@@ -1,12 +1,14 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"runtime"
 	"strconv"
+	"strings"
 )
 
 // LocationUpdate contains the location update data types as retrieved from the OsmAnd app by default
@@ -39,7 +41,7 @@ func listen() {
 		fmt.Fprintf(w, "Sorry, %s is not implemented. Possible options are: /submit to submit a location update or /retrieve to retrieve the last known location", r.RequestURI)
 	})
 
-	http.HandleFunc("/retrieve", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/retrieve", basicAuth(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Server", serverIdentifier)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(200)
@@ -48,9 +50,9 @@ func listen() {
 			log.Fatal(err)
 		}
 		w.Write(responseData)
-	})
+	}))
 
-	http.HandleFunc("/submit", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/submit", basicAuth(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Server", serverIdentifier)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(204) // The server successfully processed the request, and is not returning any content.
@@ -85,7 +87,7 @@ func listen() {
 		}
 
 		fmt.Println(string(location[:]))
-	})
+	}))
 
 	var listenAddr string = fmt.Sprintf(":%d", serverPort)
 	err := http.ListenAndServe(listenAddr, nil)
@@ -93,4 +95,32 @@ func listen() {
 		log.Fatal(err)
 	}
 
+}
+
+func basicAuth( handler http.HandlerFunc) http.HandlerFunc{
+
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		auth := strings.SplitN(r.Header.Get("Authorization"), " ", 2)
+
+		if len(auth) != 2 || auth[0] != "Basic" {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		payload, _ := base64.StdEncoding.DecodeString(auth[1])
+		pair := strings.SplitN(string(payload), ":", 2)
+
+		if len(pair) != 2 || !validate(pair[0], pair[1]) {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+	}
+}
+
+func validate(username, password string) bool {
+	if username == "user" && password == "password" {
+		return true
+	}
+	return false
 }
