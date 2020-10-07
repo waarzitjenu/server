@@ -3,12 +3,13 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"go-osmand-tracker/internal/types"
 	"log"
 	"net/http"
 	"runtime"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 
 	"github.com/asdine/storm"
 )
