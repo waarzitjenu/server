@@ -126,15 +126,12 @@ func Listen(port uint, db *storm.DB) {
 			log.Fatal("Saving entry to database failed ", err)
 		}
 
-
 	})
-
-
 
 	var listenAddr string = fmt.Sprintf(":%d", port)
 	fmt.Printf("Starting server at port: %v\n", port)
 
-	err := http.ListenAndServe(listenAddr, nil)
+	err := http.ListenAndServe(listenAddr, ginEngine)
 	if err != nil {
 		log.Fatal(err)
 	}
