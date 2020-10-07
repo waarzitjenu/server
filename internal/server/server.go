@@ -21,18 +21,17 @@ var (
 // Listen spins up a webserver and listens for incoming connections
 func Listen(port uint, db *storm.DB) {
 
-	var request = gin.Default() // Creates a gin router with default middleware
+	ginEngine := gin.Default() // Creates a gin router with default middleware
 
-	request.GET("/", func(c *gin.Context) {
+	ginEngine.GET("/", func(c *gin.Context) {
 		c.Header("Server", serverIdentifier)
 		c.Header("Content-Type", "text/plain")
 		c.Writer.WriteHeader(501)
 		c.String(http.StatusNotImplemented, "Sorry, %s is not implemented.", c.Request.RequestURI)
 
-
 	})
 
-	request.GET("/retrieve", func(c *gin.Context) {
+	ginEngine.GET("/retrieve", func(c *gin.Context) {
 
 		c.Header("Server", serverIdentifier)
 		c.Header("Content-Type", "application/json")
@@ -61,7 +60,7 @@ func Listen(port uint, db *storm.DB) {
 
 	})
 
-	request.GET("/retrieve/multi", func(c *gin.Context) {
+	ginEngine.GET("/retrieve/multi", func(c *gin.Context) {
 		c.Header("Server", serverIdentifier)
 		c.Header("Content-Type", "application/json")
 		c.Writer.WriteHeader(200)
@@ -87,15 +86,12 @@ func Listen(port uint, db *storm.DB) {
 
 		c.String(http.StatusOK, string(responseData))
 
-
-
 	})
 
-	request.GET("/submit", func(c *gin.Context) {
+	ginEngine.GET("/submit", func(c *gin.Context) {
 		c.Header("Server", serverIdentifier)
 		c.Header("Content-Type", "application/json")
 		c.Writer.WriteHeader(204) // The server successfully processed the request, and is not returning any content.
-
 
 		// TODO: Error handling
 		retrievedLatitude, _ := strconv.ParseFloat(c.Request.URL.Query().Get("lat"), 64)
