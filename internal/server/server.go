@@ -15,7 +15,8 @@ import (
 )
 
 var (
-	serverIdentifier string = fmt.Sprintf("%s on %s %s", runtime.Version(), runtime.GOOS, runtime.GOARCH)
+	serverIdentifier     string = fmt.Sprintf("%s on %s %s", runtime.Version(), runtime.GOOS, runtime.GOARCH)
+	lastDatabaseAddition []types.Entry
 )
 
 // Listen spins up a webserver and listens for incoming connections
@@ -32,42 +33,13 @@ func Listen(port uint, db *storm.DB) {
 	})
 
 	ginEngine.GET("/retrieve", func(c *gin.Context) {
-
-		c.Header("Server", serverIdentifier)
-		c.Header("Content-Type", "application/json")
-
-		var entry []types.Entry
-		db.All(&entry, storm.Limit(1), storm.Reverse())
-
-		var responseData []byte
-
-		if len(entry) == 0 {
-			// There is no data. Let's return HTTP Status 204: No Content
-			c.Writer.WriteHeader(204) // The server successfully processed the request, but is not returning any content.
-		} else {
-			// There is data. Let's process it.
-			processedEntry, err := json.Marshal(entry[0])
-			if err != nil {
-				c.Writer.WriteHeader(500) // HTTP 500 Internal Server Error
-				log.Println("Error retrieving last database entry", err)
-			} else {
-				c.Writer.WriteHeader(200) // HTTP 200 OK
-				responseData = processedEntry
-			}
-		}
-
-		c.String(http.StatusOK, string(responseData))
-
-	})
-
-	ginEngine.GET("/retrieve/multi", func(c *gin.Context) {
 		c.Header("Server", serverIdentifier)
 		c.Header("Content-Type", "application/json")
 		c.Writer.WriteHeader(200)
 
-		var cnt uint16 = 10
+		var cnt uint16 = 1
 		c.Request.URL.Query().Get("count")
-		if len(c.Request.URL.Query().Get("count")) > 0 {
+		if len(c.Request.URL.Query().Get("count")) >= 1 {
 			parsedCountValue, err := strconv.ParseUint(c.Request.URL.Query().Get("count"), 10, 16)
 			if err != nil {
 				log.Println("Error parsing query parameter 'count'", err)
@@ -76,12 +48,26 @@ func Listen(port uint, db *storm.DB) {
 			}
 		}
 
-		var entries []types.Entry
+		var (
+			entries      []types.Entry
+			responseData []byte
+		)
 
-		db.All(&entries, storm.Limit(int(cnt)), storm.Reverse())
-		responseData, err := json.Marshal(entries)
-		if err != nil {
-			log.Fatal("Processing entries from database failed", err)
+		if cnt > 1 {
+			log.Println("Fetching last location entry from database")
+			db.All(&entries, storm.Limit(int(cnt)), storm.Reverse())
+			res, err := json.Marshal(entries)
+			if err != nil {
+				log.Fatal("Processing entries from database failed", err)
+			}
+			responseData = res
+		} else {
+			log.Println("Fetching last location entry from memory")
+			res, err := json.Marshal(lastDatabaseAddition)
+			if err != nil {
+				log.Fatal("Processing last entry from memory failed", err)
+			}
+			responseData = res
 		}
 
 		c.String(http.StatusOK, string(responseData))
@@ -126,10 +112,18 @@ func Listen(port uint, db *storm.DB) {
 			log.Fatal("Saving entry to database failed ", err)
 		}
 
+		lastDatabaseAddition[0] = entry
 	})
 
+	log.Println("Fetching last location entry from database to place it in memory")
+	db.All(&lastDatabaseAddition, storm.Limit(int(1)), storm.Reverse())
+	_, dbErr := json.Marshal(lastDatabaseAddition)
+	if dbErr != nil {
+		log.Fatal("Processing last entry from database failed", dbErr)
+	}
+
 	var listenAddr string = fmt.Sprintf(":%d", port)
-	fmt.Printf("Starting server at port: %v\n", port)
+	log.Printf("Starting server on port %v\n", port)
 
 	err := http.ListenAndServe(listenAddr, ginEngine)
 	if err != nil {
