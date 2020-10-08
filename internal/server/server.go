@@ -17,10 +17,17 @@ import (
 var (
 	serverIdentifier     string = fmt.Sprintf("%s on %s %s", runtime.Version(), runtime.GOOS, runtime.GOARCH)
 	lastDatabaseAddition []types.Entry
+	IsDebug              bool
 )
 
 // Listen spins up a webserver and listens for incoming connections
 func Listen(port uint, db *storm.DB) {
+
+	gin.SetMode(gin.ReleaseMode)
+
+	if IsDebug {
+		gin.SetMode(gin.DebugMode)
+	}
 
 	ginEngine := gin.Default() // Creates a gin router with default middleware
 
@@ -42,7 +49,9 @@ func Listen(port uint, db *storm.DB) {
 		if len(c.Request.URL.Query().Get("count")) >= 1 {
 			parsedCountValue, err := strconv.ParseUint(c.Request.URL.Query().Get("count"), 10, 16)
 			if err != nil {
-				log.Println("Error parsing query parameter 'count'", err)
+				if IsDebug {
+					log.Println("Error parsing query parameter 'count'", err)
+				}
 			} else {
 				cnt = uint16(parsedCountValue)
 			}
@@ -54,7 +63,9 @@ func Listen(port uint, db *storm.DB) {
 		)
 
 		if cnt > 1 {
-			log.Println("Fetching last location entry from database")
+			if IsDebug {
+				log.Println("Fetching last location entry from database")
+			}
 			db.All(&entries, storm.Limit(int(cnt)), storm.Reverse())
 			res, err := json.Marshal(entries)
 			if err != nil {
@@ -62,10 +73,14 @@ func Listen(port uint, db *storm.DB) {
 			}
 			responseData = res
 		} else {
-			log.Println("Fetching last location entry from memory")
+			if IsDebug {
+				log.Println("Fetching last location entry from memory")
+			}
 			res, err := json.Marshal(lastDatabaseAddition)
 			if err != nil {
-				log.Fatal("Processing last entry from memory failed", err)
+				if IsDebug {
+					log.Fatal("Processing last entry from memory failed", err)
+				}
 			}
 			responseData = res
 		}
@@ -115,7 +130,10 @@ func Listen(port uint, db *storm.DB) {
 		lastDatabaseAddition[0] = entry
 	})
 
-	log.Println("Fetching last location entry from database to place it in memory")
+	if IsDebug {
+		log.Println("Fetching last location entry from database to place it in memory")
+	}
+
 	db.All(&lastDatabaseAddition, storm.Limit(int(1)), storm.Reverse())
 	_, dbErr := json.Marshal(lastDatabaseAddition)
 	if dbErr != nil {
@@ -131,4 +149,8 @@ func Listen(port uint, db *storm.DB) {
 	}
 
 	defer db.Close()
+}
+
+func SetEnvironment(status bool) {
+	IsDebug = status
 }
