@@ -78,9 +78,7 @@ func Listen(port uint, db *storm.DB) {
 			}
 			res, err := json.Marshal(lastDatabaseAddition)
 			if err != nil {
-				if IsDebug {
-					log.Fatal("Processing last entry from memory failed", err)
-				}
+				log.Fatal("Processing last entry from memory failed", err)
 			}
 			responseData = res
 		}
@@ -141,7 +139,9 @@ func Listen(port uint, db *storm.DB) {
 	}
 
 	var listenAddr string = fmt.Sprintf(":%d", port)
-	log.Printf("Starting server on port %v\n", port)
+	if IsDebug {
+		log.Printf("Starting server on port %v\n", port)
+	}
 
 	err := http.ListenAndServe(listenAddr, ginEngine)
 	if err != nil {

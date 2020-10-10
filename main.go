@@ -30,9 +30,7 @@ func main() {
 
 	db, err := database.OpenDB("./database", "locations.db")
 	if err != nil {
-		if IsDebug {
-			log.Fatal(err)
-		}
+		log.Fatal(err)
 	}
 
 	server.SetEnvironment(IsDebug)
