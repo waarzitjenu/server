@@ -23,13 +23,17 @@ var (
 // Listen spins up a webserver and listens for incoming connections
 func Listen(port uint, db *storm.DB) {
 
-	gin.SetMode(gin.ReleaseMode)
-
 	if IsDebug {
 		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
 	}
 
-	ginEngine := gin.Default() // Creates a gin router with default middleware
+	ginEngine := gin.New()        // Creates a router without any middleware by default
+	ginEngine.Use(gin.Recovery()) // Recovery middleware recovers from any panics and writes a 500 if there was one.
+	if IsDebug {
+		ginEngine.Use(gin.Logger())
+	} // Only print access logs when using --debug
 
 	ginEngine.GET("/", func(c *gin.Context) {
 		c.Header("Server", serverIdentifier)
