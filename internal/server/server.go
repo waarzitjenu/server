@@ -17,12 +17,23 @@ import (
 var (
 	serverIdentifier     string = fmt.Sprintf("%s on %s %s", runtime.Version(), runtime.GOOS, runtime.GOARCH)
 	lastDatabaseAddition []types.Entry
+	IsDebug              bool
 )
 
 // Listen spins up a webserver and listens for incoming connections
 func Listen(port uint, db *storm.DB) {
 
-	ginEngine := gin.Default() // Creates a gin router with default middleware
+	if IsDebug {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
+	ginEngine := gin.New()        // Creates a router without any middleware by default
+	ginEngine.Use(gin.Recovery()) // Recovery middleware recovers from any panics and writes a 500 if there was one.
+	if IsDebug {
+		ginEngine.Use(gin.Logger())
+	} // Only print access logs when using --debug
 
 	ginEngine.GET("/", func(c *gin.Context) {
 		c.Header("Server", serverIdentifier)
@@ -42,7 +53,9 @@ func Listen(port uint, db *storm.DB) {
 		if len(c.Request.URL.Query().Get("count")) >= 1 {
 			parsedCountValue, err := strconv.ParseUint(c.Request.URL.Query().Get("count"), 10, 16)
 			if err != nil {
-				log.Println("Error parsing query parameter 'count'", err)
+				if IsDebug {
+					log.Println("Error parsing query parameter 'count'", err)
+				}
 			} else {
 				cnt = uint16(parsedCountValue)
 			}
@@ -54,7 +67,9 @@ func Listen(port uint, db *storm.DB) {
 		)
 
 		if cnt > 1 {
-			log.Println("Fetching last location entry from database")
+			if IsDebug {
+				log.Println("Fetching last location entry from database")
+			}
 			db.All(&entries, storm.Limit(int(cnt)), storm.Reverse())
 			res, err := json.Marshal(entries)
 			if err != nil {
@@ -62,7 +77,9 @@ func Listen(port uint, db *storm.DB) {
 			}
 			responseData = res
 		} else {
-			log.Println("Fetching last location entry from memory")
+			if IsDebug {
+				log.Println("Fetching last location entry from memory")
+			}
 			res, err := json.Marshal(lastDatabaseAddition)
 			if err != nil {
 				log.Fatal("Processing last entry from memory failed", err)
@@ -115,7 +132,10 @@ func Listen(port uint, db *storm.DB) {
 		lastDatabaseAddition[0] = entry
 	})
 
-	log.Println("Fetching last location entry from database to place it in memory")
+	if IsDebug {
+		log.Println("Fetching last location entry from database to place it in memory")
+	}
+
 	db.All(&lastDatabaseAddition, storm.Limit(int(1)), storm.Reverse())
 	_, dbErr := json.Marshal(lastDatabaseAddition)
 	if dbErr != nil {
@@ -123,7 +143,9 @@ func Listen(port uint, db *storm.DB) {
 	}
 
 	var listenAddr string = fmt.Sprintf(":%d", port)
-	log.Printf("Starting server on port %v\n", port)
+	if IsDebug {
+		log.Printf("Starting server on port %v\n", port)
+	}
 
 	err := http.ListenAndServe(listenAddr, ginEngine)
 	if err != nil {
@@ -131,4 +153,8 @@ func Listen(port uint, db *storm.DB) {
 	}
 
 	defer db.Close()
+}
+
+func SetEnvironment(status bool) {
+	IsDebug = status
 }

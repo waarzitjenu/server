@@ -9,6 +9,7 @@ import (
 
 var (
 	serverPort uint
+	IsDebug    bool
 )
 
 const (
@@ -20,11 +21,18 @@ func main() {
 	// let the user pick the port by using "port" or "p" option
 	flag.UintVar(&serverPort, "port", defaultPort, portArgDescription)
 	flag.UintVar(&serverPort, "p", defaultPort, portArgDescription+" (shorthand)")
+	debugMode := flag.Bool("debug", false, "Log messages to stdout")
 	flag.Parse()
+
+	if *debugMode {
+		IsDebug = true
+	}
 
 	db, err := database.OpenDB("./database", "locations.db")
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	server.SetEnvironment(IsDebug)
 	defer server.Listen(serverPort, db)
 }
