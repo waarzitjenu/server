@@ -21,7 +21,7 @@ func main() {
 	// let the user pick the port by using "port" or "p" option
 	flag.UintVar(&serverPort, "port", defaultPort, portArgDescription)
 	flag.UintVar(&serverPort, "p", defaultPort, portArgDescription+" (shorthand)")
-	debugMode := flag.Bool("debug", false, "allow debug mode")
+	debugMode := flag.Bool("debug", false, "Log messages to stdout")
 	flag.Parse()
 
 	if *debugMode {
