@@ -16,7 +16,7 @@ import (
 
 var (
 	serverIdentifier     string = fmt.Sprintf("%s on %s %s", runtime.Version(), runtime.GOOS, runtime.GOARCH)
-	lastDatabaseAddition []types.Entry
+	lastDatabaseAddition [1]types.Entry
 	IsDebug              bool
 )
 
