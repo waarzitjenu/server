@@ -8,11 +8,11 @@ info:
     to submit and retrieve location updates from other sources.
   license:
     name: EUPL v1.2
-    url: 'https://github.com/ricardobalk/go-osmand-tracker/blob/develop/LICENSE.txt'
+    url: "https://github.com/ricardobalk/go-osmand-tracker/blob/develop/LICENSE.txt"
   version: 1.1.0
 externalDocs:
   description: View the source code on GitHub
-  url: 'https://github.com/ricardobalk/go-osmand-tracker'
+  url: "https://github.com/ricardobalk/go-osmand-tracker"
 tags:
   - name: tracking
     description: Submitting and retrieving location updates
@@ -22,95 +22,103 @@ paths:
     get:
       summary: Submit a single location update (for OsmAnd)
       description: The GET request is used for backwards compatability with the OsmAnd app.
-      operationId: ''
-      parameters: 
+      operationId: ""
+      parameters:
         - name: lat
           in: query
-          description: Curreny latitude.
+          description: Current latitude.
           schema:
             type: number
             format: float64
-            example: -4.916161356915467
+          example: -4.916161356915467
+
         - name: lon
           in: query
-          description: Curreny lomgitude.
+          description: Current longitude.
           schema:
             type: number
             format: float64
-            example: -160.2222180986629
+          example: -160.2222180986629
+
         - name: timestamp
           in: query
           description: UNIX timestamp with millisecond-precision.
           schema:
             type: integer
             format: uint16
-            example: 1602512754000
+          example: 1602512754000
+
         - name: hdop
           in: query
           description: Horizontal dilution of precision.
           schema:
             type: number
             format: float64
-            example: 1.1547510249347204
+          example: 1.1547510249347204
+
         - name: altitude
           in: query
           description: Altitude in meters.
           schema:
             type: number
             format: float64
-            example: 134.20841187793522
+          example: 134.20841187793522
+
         - name: speed
           in: query
           description: Speed in m/s.
           schema:
             type: number
             format: float64
-            example: 64.77147256992421
+          example: 64.77147256992421
       responses:
-        '204':
+        "204":
           description: No content. OsmAnd does not need it.
-        '401':
+        "401":
           description: Not authenticated.
       tags:
         - tracking
     post:
-      summary: Submit a single or multiple location updates (correct REST verb)
-      description: ''
-      operationId: ''
+      summary: Submit a single or multiple location updates
+      description: >-
+        With POST /submit, the user could submit a single or multiple status updates.
+        The request body should contain the update(s), wrapped as object(s) within an array, as JSON.<br><br>
+        Upon success, the server will return the HTTP Status 201 CREATED and it shows the value that has been added to the database.
+      operationId: ""
       requestBody:
-          description: 'Single location update'
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  properties:
-                    latitude:
-                      description: Current latitude in decimal degrees.
-                      type: number
-                      example: -4.916161356915467
-                    longitude:
-                      description: Current longitude in decimal degrees.
-                      type: number
-                      example: -160.2222180986629
-                    timestamp:
-                      description: UNIX timestamp with millisecond-precision.
-                      type: number
-                      example: 1602512754000
-                    hdop:
-                      description: Horizontal dilution of precision.
-                      type: number
-                      example: 1.1547510249347204
-                    altitude:
-                      description: Current altitude in meters.
-                      type: number
-                      example: 134.20841187793522
-                    speed:
-                      description: Current speed in m/s.
-                      type: number
-                      example: 64.77147256992421
+        description: "Single location update"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                properties:
+                  latitude:
+                    description: Current latitude in decimal degrees.
+                    type: number
+                    example: -4.916161356915467
+                  longitude:
+                    description: Current longitude in decimal degrees.
+                    type: number
+                    example: -160.2222180986629
+                  timestamp:
+                    description: UNIX timestamp with millisecond-precision.
+                    type: number
+                    example: 1602512754000
+                  hdop:
+                    description: Horizontal dilution of precision.
+                    type: number
+                    example: 1.1547510249347204
+                  altitude:
+                    description: Current altitude in meters.
+                    type: number
+                    example: 134.20841187793522
+                  speed:
+                    description: Current speed in m/s.
+                    type: number
+                    example: 64.77147256992421
       responses:
-        '200':
+        "201":
           description: >-
             Location has been submitted. A response containing the database
             entry is shown.
@@ -119,8 +127,8 @@ paths:
               examples:
                 Database addition:
                   value: >-
-                    [{"ID":102,"Timestamp":1602512754,"Data":{"latitude":-4.916161356915467,"longitude":-160.22221809866299,"timestamp":1602512754,"hdop":1.1547510249347204,"altitude":134.20841187793522,"speed":64.77147256992421}}]
-        '401':
+                    [{"ID":102,"Timestamp":1602512754000,"Data":{"latitude":-4.916161356915467,"longitude":-160.22221809866299,"timestamp":1602512754,"hdop":1.1547510249347204,"altitude":134.20841187793522,"speed":64.77147256992421}}]
+        "401":
           description: Not authenticated.
       tags:
         - tracking
@@ -128,23 +136,23 @@ paths:
     summary: Retrieves location updates
     get:
       summary: Retrieves the last known location
-      description: ''
-      operationId: ''
+      description: ""
+      operationId: ""
       responses:
-        '200':
+        "200":
           description: Retrieving last known location(s) successful.
           content:
             application/json:
               examples:
                 Single location update:
                   value: >-
-                    [{"ID":102,"Timestamp":1602512754,"Data":{"latitude":-4.916161356915467,"longitude":-160.2222180986629,"timestamp":1602512754,"hdop":1.1547510249347204,"altitude":134.20841187793522,"speed":64.77147256992421}}]
+                    [{"ID":102,"Timestamp":1602512754000,"Data":{"latitude":-4.916161356915467,"longitude":-160.2222180986629,"timestamp":1602512754,"hdop":1.1547510249347204,"altitude":134.20841187793522,"speed":64.77147256992421}}]
                 Multiple location updates (using the count parameter):
                   value: >-
-                    [{"ID":102,"Timestamp":1602512754,"Data":{"latitude":-4.916161356915467,"longitude":-160.2222180986629,"timestamp":1602512754,"hdop":1.1547510249347204,"altitude":134.20841187793522,"speed":64.77147256992421}},{"ID":101,"Timestamp":1602512754,"Data":{"latitude":33.97124421257169,"longitude":160.0357362345378,"timestamp":1602512754,"hdop":13.786868053846266,"altitude":1681.498893225688,"speed":53.014155880294894}},{"ID":100,"Timestamp":1602512753,"Data":{"latitude":-60.01392249824546,"longitude":98.42609160095583,"timestamp":1602512753,"hdop":14.713819682956101,"altitude":885.1180921964191,"speed":51.32874621010568}}]
-        '204':
+                    [{"ID":102,"Timestamp":1602512754,"Data":{"latitude":-4.916161356915467,"longitude":-160.2222180986629,"timestamp":1602512754000,"hdop":1.1547510249347204,"altitude":134.20841187793522,"speed":64.77147256992421}},{"ID":101,"Timestamp":1602512754,"Data":{"latitude":33.97124421257169,"longitude":160.0357362345378,"timestamp":1602512754,"hdop":13.786868053846266,"altitude":1681.498893225688,"speed":53.014155880294894}},{"ID":100,"Timestamp":1602512753,"Data":{"latitude":-60.01392249824546,"longitude":98.42609160095583,"timestamp":1602512753,"hdop":14.713819682956101,"altitude":885.1180921964191,"speed":51.32874621010568}}]
+        "204":
           description: No location update has been submitted to the database yet.
-        '401':
+        "401":
           description: Not authenticated.
       tags:
         - tracking
@@ -154,12 +162,9 @@ paths:
           required: false
           schema:
             type: integer
-            format: uint16
             minimum: 1
             maximum: 65535
           description: The number of items to return
 servers:
-  - url: 'http://localhost:8080/'
+  - url: "http://localhost:8080/"
     variables: {}
-
-
