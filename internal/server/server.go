@@ -3,12 +3,14 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"go-osmand-tracker/internal/auxillary"
 	"go-osmand-tracker/internal/types"
 	"log"
 	"net/http"
 	"runtime"
 	"strconv"
 
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 
 	"github.com/asdine/storm"
@@ -35,17 +37,21 @@ func Listen(port uint, db *storm.DB) {
 		ginEngine.Use(gin.Logger())
 	} // Only print access logs when using --debug
 
-	ginEngine.GET("/", func(c *gin.Context) {
-		c.Header("Server", serverIdentifier)
-		c.Header("Content-Type", "text/plain")
-		c.Writer.WriteHeader(501)
-		c.String(http.StatusNotImplemented, "Sorry, %s is not implemented.", c.Request.RequestURI)
-
-	})
+	if auxillary.DoesDirExist("./web/dist") {
+		ginEngine.Use(static.Serve("/", static.LocalFile("./web/dist", false)))
+	} else {
+		ginEngine.GET("/", func(c *gin.Context) {
+			c.Header("Server", serverIdentifier)
+			c.Header("Content-Type", "text/plain")
+			c.Writer.WriteHeader(501)
+			c.String(http.StatusNotImplemented, "Sorry, %s is not implemented.", c.Request.RequestURI)
+		})
+	}
 
 	ginEngine.GET("/retrieve", func(c *gin.Context) {
 		c.Header("Server", serverIdentifier)
 		c.Header("Content-Type", "application/json")
+		c.Header("Access-Control-Allow-Origin", "*")
 		c.Writer.WriteHeader(200)
 
 		var cnt uint16 = 1
