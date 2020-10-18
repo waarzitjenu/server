@@ -1,6 +1,7 @@
 package auxillary
 
 import (
+	"flag"
 	"os"
 )
 
@@ -22,4 +23,20 @@ func CreateDirIfNotExist(dir string) error {
 		}
 	}
 	return nil
+}
+
+func IsFlagPassed(name string) bool {
+	// falg.Visit shall be called after flags is parsed
+	if !flag.Parsed() {
+		flag.Parse()
+	}
+
+	found := false
+	flag.Visit(func(f *flag.Flag) {
+		if f.Name == name {
+			found = true
+		}
+	})
+
+	return found
 }
