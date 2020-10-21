@@ -4,7 +4,7 @@ A basic application written in Go for receiving live location updates from the O
 
 ![OsmAnd with activated live tracking and the corresponding console output from go-osmand-tracker](./docs/tracking-example.png)
 
-Image: OsmAnd app submitting location updates to the back-end, front-end retrieving the current location and showing it on a map.
+Image: OsmAnd app submitting location updates to the back-end, front-end retrieving the current location and showing it on a map. [Learn how to set up OsmAnd][OsmAnd Documentation]
 
 ---
 
@@ -40,3 +40,5 @@ EUPL v1.2 or later. See [LICENSE.txt](LICENSE.txt). Available in [other language
 
 [open issues]: https://github.com/ricardobalk/go-osmand-tracker/issues "Open issues of go-osmand-tracker"
 [kan-ban board]: https://github.com/ricardobalk/go-osmand-tracker/projects/1 "Who's working on what?"
+
+[OsmAnd documentation]: ./docs/OsmAnd/README.md "How to set up OsmAnd"
