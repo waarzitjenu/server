@@ -31,13 +31,13 @@ func main() {
 		IsDebug = true
 	}
 
-	// if there is no flags, depend on config file instead of flags
+	// if there are no flags, depend on config file instead of flags
 	if !auxillary.IsFlagPassed("p") && !auxillary.IsFlagPassed("port") {
 
 		configFile, err := settings.Read(settingsFile)
 
 		if err != nil {
-			log.Printf("Error in settings file %v, settings file will be created by default values!\n", err)
+			log.Printf("Error in settings file %s: %s, settings file will be created with default values!\n", settingsFile, err)
 		}
 
 		if err == nil {
@@ -54,7 +54,7 @@ func main() {
 		}
 		err := settings.Write(settingsFile, &config)
 		if err != nil {
-			log.Printf("Error writing settings file %v\n", err)
+			log.Printf("Error writing settings file %s: %s\n", settingsFile, err)
 		}
 	}
 

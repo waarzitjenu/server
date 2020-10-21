@@ -8,13 +8,17 @@ import (
 	"os"
 )
 
+// Config contains the possible configuration parametes that are available in the settings.json file.
 type Config struct {
 	Port  uint `json:"port"`
 	Debug bool `json:"debug"`
 }
 
-var InvalidPort = errors.New("invalid port")
+var (
+	errInvalidPort = errors.New("Invalid port")
+)
 
+// Read reads the configuration file, validates it and returns it.
 func Read(filename string) (*Config, error) {
 	settingsFile, err := os.Open(filename)
 
@@ -49,16 +53,17 @@ func Read(filename string) (*Config, error) {
 
 	// Validate entered port
 	if configFile.Port == 0 {
-		return nil, InvalidPort
+		return nil, errInvalidPort
 	}
 
 	if configFile.Debug {
-		log.Printf("Successfully parsed settings file: %s \n", filename)
+		log.Printf("Successfully parsed settings file: %s\n", filename)
 	}
 
 	return &configFile, nil
 }
 
+// Write writes the configuration file and returns an error in case of failure.
 func Write(filename string, config *Config) error {
 	configBytes, err := json.Marshal(config)
 	if err != nil {
@@ -73,10 +78,11 @@ func Write(filename string, config *Config) error {
 	return nil
 }
 
+// IsCorrupted checks the configuration file for corruption and/or invalid values, it returns true in case the settings file is corrupted.
 func IsCorrupted(filename string) bool {
 	_, err := Read(filename)
 
-	if err == InvalidPort {
+	if err == errInvalidPort {
 		return true
 	}
 
