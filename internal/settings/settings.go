@@ -80,9 +80,10 @@ func Write(filename string, config *Config) error {
 
 // IsCorrupted checks the configuration file for corruption and/or invalid values, it returns true in case the settings file is corrupted.
 func IsCorrupted(filename string) bool {
-	_, err := Read(filename)
+	b, err := Read(filename)
 
-	if err == errInvalidPort {
+	// should be corrupted if empty or invalid port
+	if b == nil || err == errInvalidPort {
 		return true
 	}
 
