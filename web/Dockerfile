@@ -2,7 +2,8 @@ FROM node:14
 
 USER node
 RUN mkdir -p /home/node/.npm-global \
-             /home/node/go-osmand-tracker
+             /home/node/go-osmand-tracker \
+             /home/node/go-osmand-tracker/dist
              
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
 ENV PATH=$NPM_CONFIG_PREFIX/bin:$PATH
