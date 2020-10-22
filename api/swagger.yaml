@@ -1,0 +1,267 @@
+openapi: 3.0.1
+info:
+  title: go-osmand-tracker
+  description: >-
+    This is the API specification of the go-osmand-tracker app, an app built to
+    receive location updates from the OsmAnd app on iOS and Android devices.
+    <br><br> The location tracker is not limited to OsmAnd, it is also possible
+    to submit and retrieve location updates from other sources.
+  license:
+    name: EUPL v1.2
+    url: 'https://github.com/ricardobalk/go-osmand-tracker/blob/develop/LICENSE.txt'
+  version: 1.1.0
+externalDocs:
+  description: View the source code on GitHub
+  url: 'https://github.com/ricardobalk/go-osmand-tracker'
+tags:
+  - name: tracking
+    description: Submitting and retrieving location updates
+components:
+  schemas:
+    unix_timestamp_millis:
+      description: The current Unix timestamp with millisecond precision.
+      type: number
+      format: uint64
+      example: 1602512754000
+    latitude:
+      description: The current latitude in decimal degrees.
+      type: number
+      format: float64
+      minimum: -90
+      maximum: 90
+      example: -4.916161356915467
+    longitude:
+      description: The current longitude in decimal degrees.
+      type: number
+      format: float64
+      minimum: -180
+      maximum: 180
+      example: -160.2222180986629
+    altitude:
+      description: The current altitude in meters above sea level.
+      type: number
+      format: float64
+      example: 134.20841187793522
+    hdop:
+      description: Horizontal dilution of precision.
+      type: number
+      format: float64
+      example: 1.1547510249347204
+    speed:
+      description: The current speed in meters/second.
+      type: number
+      format: float64
+      example: 64.77147256992421
+    LocationUpdate:
+      type: object
+      required:
+        - latitude
+        - longitude
+        - timestamp
+      properties:
+        timestamp:
+          $ref: '#/components/schemas/unix_timestamp_millis'
+        latitude:
+          $ref: '#/components/schemas/latitude'
+        longitude:
+          $ref: '#/components/schemas/longitude'
+        altitude:
+          $ref: '#/components/schemas/altitude'
+        hdop:
+          $ref: '#/components/schemas/hdop'
+        speed:
+          $ref: '#/components/schemas/speed'
+    LocationUpdates:
+      type: array
+      items:
+        $ref: '#/components/schemas/LocationUpdate'
+    DatabaseEntry:
+      type: object
+      required:
+        - ID
+        - Timestamp
+        - Data
+      properties:
+        ID:
+          type: number
+          format: uint64
+        Timestamp:
+          $ref: '#/components/schemas/unix_timestamp_millis'
+        Data:
+          $ref: '#/components/schemas/LocationUpdate'
+    DatabaseEntries:
+      type: array
+      items:
+        $ref: '#/components/schemas/DatabaseEntry'
+  parameters:
+    lat:
+      name: lat
+      in: query
+      description: The current latitude in decimal degrees.
+      schema:
+        $ref: '#/components/schemas/latitude'
+    lon:
+      name: lon
+      in: query
+      description: The current longitude in decimal degrees.
+      schema:
+        $ref: '#/components/schemas/longitude'
+    timestamp:
+      name: timestamp
+      in: query
+      description: The current Unix timestamp with millisecond precision.
+      schema:
+        $ref: '#/components/schemas/unix_timestamp_millis'
+    hdop:
+      name: hdop
+      in: query
+      description: Horizontal dilution of precision.
+      schema:
+        $ref: '#/components/schemas/hdop'
+    alt:
+      name: alt
+      in: query
+      description: Altitude in meters above sea-level.
+      schema:
+        $ref: '#/components/schemas/altitude'
+    speed:
+      name: speed
+      in: query
+      description: Speed in m/s.
+      schema:
+        $ref: '#/components/schemas/speed'
+  responses:
+    SubmitLocationUpdate:
+      description: >-
+        Location has been submitted. A response containing the database entry is
+        shown.
+      content:
+        application/json:
+          examples:
+            Single update:
+              value:
+                - ID: 102
+                  Timestamp: 1602512754000
+                  Data:
+                    latitude: -4.916161356915467
+                    longitude: -160.22221809866298
+                    timestamp: 1602512754
+                    hdop: 1.1547510249347204
+                    altitude: 134.20841187793522
+                    speed: 64.77147256992421
+    RetrieveLocationUpdates:
+      description: Retrieving last known location(s) successful.
+      content:
+        application/json:
+          examples:
+            Single location update:
+              value:
+                - ID: 102
+                  Timestamp: 1602512754000
+                  Data:
+                    latitude: -4.916161356915467
+                    longitude: -160.2222180986629
+                    timestamp: 1602512754
+                    hdop: 1.1547510249347204
+                    altitude: 134.20841187793522
+                    speed: 64.77147256992421
+            Multiple location updates (using the count parameter):
+              value:
+                - ID: 102
+                  Timestamp: 1602512754
+                  Data:
+                    latitude: -4.916161356915467
+                    longitude: -160.2222180986629
+                    timestamp: 1602512754000
+                    hdop: 1.1547510249347204
+                    altitude: 134.20841187793522
+                    speed: 64.77147256992421
+                - ID: 101
+                  Timestamp: 1602512754
+                  Data:
+                    latitude: 33.97124421257169
+                    longitude: 160.0357362345378
+                    timestamp: 1602512754
+                    hdop: 13.786868053846266
+                    altitude: 1681.498893225688
+                    speed: 53.014155880294894
+                - ID: 100
+                  Timestamp: 1602512753
+                  Data:
+                    latitude: -60.01392249824546
+                    longitude: 98.42609160095583
+                    timestamp: 1602512753
+                    hdop: 14.713819682956101
+                    altitude: 885.1180921964191
+                    speed: 51.32874621010568
+paths:
+  /submit:
+    summary: Submit a location update to the server
+    get:
+      summary: Submit a single location update (for OsmAnd)
+      description: The GET request is used for backwards compatability with the OsmAnd app.
+      operationId: ''
+      parameters:
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/lat'
+        - $ref: '#/components/parameters/lon'
+        - $ref: '#/components/parameters/hdop'
+        - $ref: '#/components/parameters/alt'
+        - $ref: '#/components/parameters/speed'
+      responses:
+        '204':
+          description: No content. OsmAnd does not need it.
+        '401':
+          description: Not authenticated.
+      tags:
+        - tracking
+    post:
+      summary: Submit a single or multiple location updates
+      description: >-
+        With POST /submit, the user could submit a single or multiple status
+        updates. The request body should contain the update(s), wrapped as
+        object(s) within an array, as JSON.<br><br> Upon success, the server
+        will return the HTTP Status 201 CREATED and it shows the value that has
+        been added to the database.
+      operationId: ''
+      requestBody:
+        description: Single location update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationUpdates'
+      responses:
+        '201':
+          $ref: '#/components/responses/RetrieveLocationUpdates'
+        '401':
+          description: Not authenticated.
+      tags:
+        - tracking
+  /retrieve:
+    summary: Retrieves location updates
+    get:
+      summary: Retrieves the last known location
+      description: ''
+      operationId: ''
+      responses:
+        '200':
+          $ref: '#/components/responses/RetrieveLocationUpdates'
+        '204':
+          description: No location update has been submitted to the database yet.
+        '401':
+          description: Not authenticated.
+      tags:
+        - tracking
+      parameters:
+        - in: query
+          name: count
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 65535
+          description: The number of items to return.
+servers:
+  - url: 'http://localhost:8080/'
+    variables: {}
+
