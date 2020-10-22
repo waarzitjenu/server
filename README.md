@@ -1,18 +1,18 @@
 # go-osmand-tracker
 
-A basic application written in Go for receiving live location updates from the OsmAnd app, and basically any other application that supports REST.
+A basic application for submitting and retrieving live location updates. Originally focused on OsmAnd, but basically any application that supports REST could use it.
+
+The back-end (REST API) of this application is made with Go, the front-end (map interface) is made with modern Vue 3 and TypeScript. Because of its modular setup, it is possible to run the back-end, front-end or a combination of both. :tada:
 
 ![OsmAnd with activated live tracking and the corresponding console output from go-osmand-tracker](./docs/tracking-example.png)
 
-Image: OsmAnd app submitting location updates to the back-end, front-end retrieving the current location and showing it on a map. [Learn how to set up OsmAnd][OsmAnd Documentation]
+Image: OsmAnd app submitting location updates to the back-end, front-end retrieving the current location and showing it on a map. [Learn how to set up OsmAnd][OsmAnd Documentation].
 
 ---
 
-## Go-based back-end and/or Vue-based front-end
+## Getting started
 
-This application consists of a back-end written in Go (REST API), and a front-end (map interface) written in modern Vue 3 with TypeScript. Because of its modular setup, it is possible to run the back-end, front-end or a combination of both.
-
-Please read the [installation instructions](./docs/Installation) to learn how to get started.
+Please read the [installation instructions](./docs/Installation) to learn how to get started. It explains how to run the back-end, front-end or both, with and without Docker. :wink:
 
 ---
 
@@ -20,7 +20,7 @@ Please read the [installation instructions](./docs/Installation) to learn how to
 
 Looking to contribute to this repository, perhaps because you're a participant of Hacktoberfest? Take a look at the [open issues][] to find things that need some work :wink: All help is appreciated! :heart:
 
-Good to know:
+**Good to know:**
 
 - To have an overview of who's working on what, take a look at this [kan-ban board][].
 - Always pull in the latest code from `develop` before working on something.
