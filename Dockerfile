@@ -6,6 +6,7 @@ COPY ["go.mod", "go.sum", "main.go", "./"]
 COPY ["internal/auxillary", "./internal/auxillary/"]
 COPY ["internal/database", "./internal/database/"]
 COPY ["internal/server", "./internal/server/"]
+COPY ["internal/settings", "./internal/settings/"]
 COPY ["internal/types", "./internal/types/"]
 
 RUN ["go", "mod", "download"]
