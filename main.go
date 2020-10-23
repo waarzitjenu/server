@@ -2,16 +2,19 @@ package main
 
 import (
 	"flag"
-	"go-osmand-tracker/internal/auxillary"
+	"go-osmand-tracker/internal/auxiliary"
 	"go-osmand-tracker/internal/database"
+	"go-osmand-tracker/internal/filesystem"
 	"go-osmand-tracker/internal/server"
 	"go-osmand-tracker/internal/settings"
+	"go-osmand-tracker/internal/types"
 	"log"
 )
 
 var (
+	// IsDebug tells if the server is running in debug mode, i.e. whether or not to provide output messages.
+	IsDebug      bool // TODO: Move exported var to main.go
 	serverPort   uint
-	IsDebug      bool
 	settingsFile string
 )
 
@@ -23,19 +26,20 @@ const (
 )
 
 func main() {
-	// let the user pick the settings file (optional)
+	// Let the user pick the settings file (optional)
 	flag.StringVar(&settingsFile, "config", defaultSettingsFile, settingFileDescription)
 	flag.Parse()
 
-	// create settings file if config not passed, not exists or corrupted
-	if !auxillary.IsFlagPassed("config") && (!auxillary.DoesDirExist(settingsFile) || settings.IsCorrupted(settingsFile)) {
-		config := settings.Config{
+	// Create settings file if config not passed, not exists or corrupted
+	if !auxiliary.IsFlagPassed("config") && (!filesystem.DoesDirExist(settingsFile) || settings.IsCorrupted(settingsFile)) {
+		config := types.Config{
 			Port:  defaultServerPort,
 			Debug: defaultDebugStatus,
 		}
+		log.Printf("Initialising settings file %s\n", settingsFile)
 		err := settings.Write(settingsFile, &config)
 		if err != nil {
-			log.Printf("Error writing settings file %s: %s\n", settingsFile, err)
+			log.Printf("Error writing settings file: %s\n", err)
 		}
 	}
 

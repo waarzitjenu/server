@@ -1,25 +1,21 @@
+// Package settings handles the configuration file and the settings it regulates.
 package settings
 
 import (
 	"encoding/json"
 	"errors"
+	"go-osmand-tracker/internal/types"
 	"io/ioutil"
 	"log"
 	"os"
 )
-
-// Config contains the possible configuration parametes that are available in the settings.json file.
-type Config struct {
-	Port  uint `json:"port"`
-	Debug bool `json:"debug"`
-}
 
 var (
 	errInvalidPort = errors.New("Invalid port")
 )
 
 // Read reads the configuration file, validates it and returns it.
-func Read(filename string) (*Config, error) {
+func Read(filename string) (*types.Config, error) {
 	settingsFile, err := os.Open(filename)
 
 	if err != nil {
@@ -43,7 +39,7 @@ func Read(filename string) (*Config, error) {
 		return nil, err
 	}
 
-	var configFile Config
+	var configFile types.Config
 
 	err = json.Unmarshal(byteValue, &configFile)
 
@@ -64,7 +60,7 @@ func Read(filename string) (*Config, error) {
 }
 
 // Write writes the configuration file and returns an error in case of failure.
-func Write(filename string, config *Config) error {
+func Write(filename string, config *types.Config) error {
 	configBytes, err := json.Marshal(config)
 	if err != nil {
 		return err
