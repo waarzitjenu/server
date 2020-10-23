@@ -1,9 +1,7 @@
-package auxillary
+// Package filesystem contains some general filesystem functions.
+package filesystem
 
-import (
-	"flag"
-	"os"
-)
+import "os"
 
 // DoesDirExist checks if a directory exists and returns a boolean.
 func DoesDirExist(directory string) bool {
@@ -23,20 +21,4 @@ func CreateDirIfNotExist(dir string) error {
 		}
 	}
 	return nil
-}
-
-func IsFlagPassed(name string) bool {
-	// falg.Visit shall be called after flags is parsed
-	if !flag.Parsed() {
-		flag.Parse()
-	}
-
-	found := false
-	flag.Visit(func(f *flag.Flag) {
-		if f.Name == name {
-			found = true
-		}
-	})
-
-	return found
 }

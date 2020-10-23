@@ -1,9 +1,10 @@
+// Package server contains the code for the server engine.
 package server
 
 import (
 	"encoding/json"
 	"fmt"
-	"go-osmand-tracker/internal/auxillary"
+	"go-osmand-tracker/internal/filesystem"
 	"go-osmand-tracker/internal/types"
 	"log"
 	"net/http"
@@ -17,9 +18,11 @@ import (
 )
 
 var (
-	serverIdentifier     string = fmt.Sprintf("%s on %s %s", runtime.Version(), runtime.GOOS, runtime.GOARCH)
+	// IsDebug tells if the server is running in debug mode, i.e. whether or not to provide output messages.
+	IsDebug bool // TODO: Move exported var to main.go
+
 	lastDatabaseAddition [1]types.Entry
-	IsDebug              bool
+	serverIdentifier     string = fmt.Sprintf("%s on %s %s", runtime.Version(), runtime.GOOS, runtime.GOARCH)
 )
 
 // Listen spins up a webserver and listens for incoming connections
@@ -35,9 +38,9 @@ func Listen(port uint, db *storm.DB) {
 	ginEngine.Use(gin.Recovery()) // Recovery middleware recovers from any panics and writes a 500 if there was one.
 	if IsDebug {
 		ginEngine.Use(gin.Logger())
-	} // Only print access logs when using --debug
+	} // Only print access logs when debug mode is active.
 
-	if auxillary.DoesDirExist("./web/dist") {
+	if filesystem.DoesDirExist("./web/dist") {
 		ginEngine.Use(static.Serve("/", static.LocalFile("./web/dist", false)))
 	} else {
 		ginEngine.GET("/", func(c *gin.Context) {
@@ -161,6 +164,7 @@ func Listen(port uint, db *storm.DB) {
 	defer db.Close()
 }
 
+// SetEnvironment sets IsDebug to a given value.
 func SetEnvironment(status bool) {
-	IsDebug = status
+	IsDebug = status // TODO: IsDebug is an exported value, this might be unnecessary code.
 }
