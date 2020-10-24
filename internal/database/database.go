@@ -2,7 +2,7 @@ package database
 
 import (
 	"errors"
-	"go-osmand-tracker/internal/auxillary"
+	"go-osmand-tracker/internal/filesystem"
 	"strings"
 
 	"github.com/asdine/storm"
@@ -23,7 +23,7 @@ func OpenDB(directory string, filename string) (database *storm.DB, err error) {
 		filename = defaultFilename
 	}
 
-	dirErr := auxillary.CreateDirIfNotExist(directory)
+	dirErr := filesystem.CreateDirIfNotExist(directory)
 	if dirErr != nil {
 		return nil, dirErr
 	}

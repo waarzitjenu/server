@@ -1,4 +1,11 @@
+// Package types contains the type definitions used in this application.
 package types
+
+// Config contains the possible configuration parameters that are available in the settings.json file.
+type Config struct {
+	Port  uint `json:"port"`
+	Debug bool `json:"debug"`
+}
 
 // LocationUpdate contains the location update data types as retrieved from the OsmAnd app by default
 type LocationUpdate struct {

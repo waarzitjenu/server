@@ -2,61 +2,54 @@ package main
 
 import (
 	"flag"
-	"go-osmand-tracker/internal/auxillary"
+	"go-osmand-tracker/internal/auxiliary"
 	"go-osmand-tracker/internal/database"
+	"go-osmand-tracker/internal/filesystem"
 	"go-osmand-tracker/internal/server"
 	"go-osmand-tracker/internal/settings"
+	"go-osmand-tracker/internal/types"
 	"log"
 )
 
 var (
-	serverPort uint
-	IsDebug    bool
+	// IsDebug tells if the server is running in debug mode, i.e. whether or not to provide output messages.
+	IsDebug      bool // TODO: Move exported var to main.go
+	serverPort   uint
+	settingsFile string
 )
 
 const (
-	defaultPort        = 8080
-	portArgDescription = "The port used to run the application. Defaults to 8080"
-	settingsFile       = "settings.json"
+	settingFileDescription = "The settings file used to run the application. with configuration port and etc."
+	defaultSettingsFile    = "settings.json"
+	defaultServerPort      = 8080
+	defaultDebugStatus     = false
 )
 
 func main() {
-	// let the user pick the port by using "port" or "p" option
-	flag.UintVar(&serverPort, "port", defaultPort, portArgDescription)
-	flag.UintVar(&serverPort, "p", defaultPort, portArgDescription+" (shorthand)")
-	debugMode := flag.Bool("debug", false, "Log messages to stdout")
+	// Let the user pick the settings file (optional)
+	flag.StringVar(&settingsFile, "config", defaultSettingsFile, settingFileDescription)
 	flag.Parse()
 
-	if *debugMode {
-		IsDebug = true
-	}
-
-	// if there are no flags, depend on config file instead of flags
-	if !auxillary.IsFlagPassed("p") && !auxillary.IsFlagPassed("port") {
-
-		configFile, err := settings.Read(settingsFile)
-
-		if err != nil {
-			log.Printf("Error in settings file %s: %s, settings file will be created with default values!\n", settingsFile, err)
+	// Create settings file if config not passed, not exists or corrupted
+	if !auxiliary.IsFlagPassed("config") && (!filesystem.DoesDirExist(settingsFile) || settings.IsCorrupted(settingsFile)) {
+		config := types.Config{
+			Port:  defaultServerPort,
+			Debug: defaultDebugStatus,
 		}
-
-		if err == nil {
-			serverPort = configFile.Port
-			IsDebug = configFile.Debug
-		}
-	}
-
-	// create settings file if not exists or corrupted
-	if !auxillary.DoesDirExist(settingsFile) || settings.IsCorrupted(settingsFile) {
-		config := settings.Config{
-			Port:  serverPort,
-			Debug: IsDebug,
-		}
+		log.Printf("Initialising settings file %s\n", settingsFile)
 		err := settings.Write(settingsFile, &config)
 		if err != nil {
-			log.Printf("Error writing settings file %s: %s\n", settingsFile, err)
+			log.Printf("Error writing settings file: %s\n", err)
 		}
 	}
+
+	configFile, err := settings.Read(settingsFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	serverPort = configFile.Port
+	IsDebug = configFile.Debug
 
 	db, err := database.OpenDB("./database", "locations.db")
 	if err != nil {
