@@ -1,0 +1,14 @@
+version: 2
+
+updates:
+  # Maintain dependencies for Go
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "daily"
+
+  # Maintain dependencies for npm
+  - package-ecosystem: "npm"
+    directory: "/web"
+    schedule:
+      interval: "daily"
