@@ -17,38 +17,33 @@ The back-end (REST API) of this application is made with Go, the front-end (map 
 
 ![OsmAnd with activated live tracking and the corresponding console output from go-osmand-tracker](./docs/tracking-example.png)
 
-Image: OsmAnd app submitting location updates to the back-end, front-end retrieving the current location and showing it on a map. [Learn how to set up OsmAnd][OsmAnd Documentation].
+Image: OsmAnd app submitting location updates to the back-end, front-end retrieving the current location and showing it on a map. [Learn how to set up OsmAnd][OsmAnd documentation].
 
 ---
 
-## Getting started
+## Resources
 
-Please read the [installation instructions](./docs/Installation) to learn how to get started. It explains how to run the back-end, front-end or both, with and without Docker. :wink:
+### Getting started
 
----
+Please read the [installation instructions][] to learn how to get started. It explains how to run the back-end, front-end or both, with and without Docker. :wink:
 
-## Contributing
+### API Documentation
 
-Looking to contribute to this repository, perhaps because you're a participant of Hacktoberfest? Take a look at the [open issues][] to find things that need some work :wink: All help is appreciated! :heart:
+To learn more about the API and see some examples of using it, take a look at the [API Documentation][].
 
-**Good to know:**
+### Contributing
 
-- To have an overview of who's working on what, take a look at this [kan-ban board][].
-- Always pull in the latest code from `develop` before working on something.
-  use your Git GUI for this or use `git pull origin develop` from the command line.
-- Create a new branch with a distinct name. This provides a good overview and makes reviewing code a lot easier.
-  an example would be `feature/#22-dockerfile`, when you've been working on [issue #22 (Create Dockerfile)](https://github.com/ricardobalk/go-osmand-tracker/issues/22)
-- The difference between an **improvement** and an **enhancement**.
-  - An **improvement** is something that **currently works** but could be done in a better way. Something that needs to be **improved**. An improvement does not change the overall behaviour of the application. Like [using gin-gonic/gin instead of net/http (#17)](https://github.com/ricardobalk/go-osmand-tracker/pull/17).
-  - An **enhancement** is something that doesn't yet exist, like a new feature. Something that needs to be added to the application in order to **enhance** it. An enhancement changes the behaviour of the application. Like [saving tracks to a database (#3)](https://github.com/ricardobalk/go-osmand-tracker/issues/3).
-- If you have any question, feel free to open an issue and give it the label `question`.
+The [contribution guidelines][] document briefly explains how to contribute to this repository. Also consider taking a look at the [open issues][] to know what needs to be done and the [kan-ban board][] to see who's currently working on what.
 
----
+### License
 
-## License
+The license this project uses is the EUPL v1.2 or later. See [LICENSE.txt](LICENSE.txt). Available in [other languages](./EUPL) as well.
 
-EUPL v1.2 or later. See [LICENSE.txt](LICENSE.txt). Available in [other languages](./EUPL) as well.
 
+
+[installation instructions]: ./docs/Installation/README.md "Installation Instructions"
+[API Documentation]: ./api/README.md "API Documentation"
+[contribution guidelines]: ./CONTRIBUTING.md	"Contribution guidelines"
 [open issues]: https://github.com/ricardobalk/go-osmand-tracker/issues "Open issues of go-osmand-tracker"
 [kan-ban board]: https://github.com/ricardobalk/go-osmand-tracker/projects/1 "Who's working on what?"
 
