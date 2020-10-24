@@ -2,6 +2,17 @@
 
 A basic application for submitting and retrieving live location updates. Originally focused on OsmAnd, but basically any application that supports REST could use it.
 
+[![Build Status](https://travis-ci.org/ricardobalk/go-osmand-tracker.svg?branch=master)](https://travis-ci.org/ricardobalk/go-osmand-tracker)
+[![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/ricardobalk/go-osmand-tracker?color=%2300aa00)](./go.mod)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ricardobalk/go-osmand-tracker)](https://goreportcard.com/report/github.com/ricardobalk/go-osmand-tracker)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/y/ricardobalk/go-osmand-tracker?color=%2300aa00)](https://github.com/ricardobalk/go-osmand-tracker/graphs/commit-activity)
+[![GitHub open issues](https://img.shields.io/github/issues/ricardobalk/go-osmand-tracker)](https://github.com/ricardobalk/go-osmand-tracker/issues?q=is%3Aopen+is%3Aissue)
+[![GitHub closed issues](https://img.shields.io/github/issues-closed/ricardobalk/go-osmand-tracker?color=%2300aa00)](https://github.com/ricardobalk/go-osmand-tracker/issues?q=is%3Aissue+is%3Aclosed)
+[![Requirements Status](https://requires.io/github/ricardobalk/go-osmand-tracker/requirements.svg?branch=master)](https://requires.io/github/ricardobalk/go-osmand-tracker/requirements/?branch=master)
+[![License](https://img.shields.io/github/license/ricardobalk/go-osmand-tracker?color=%2300aa00)](./LICENSE.txt)
+[![GitHub Hacktoberfest combined status](https://img.shields.io/github/hacktoberfest/2020/ricardobalk/go-osmand-tracker)](https://github.com/ricardobalk/go-osmand-tracker/issues?q=is%3Aopen+is%3Aissue+label%3Ahacktoberfest)
+
+
 The back-end (REST API) of this application is made with Go, the front-end (map interface) is made with modern Vue 3 and TypeScript. Because of its modular setup, it is possible to run the back-end, front-end or a combination of both. :tada:
 
 ![OsmAnd with activated live tracking and the corresponding console output from go-osmand-tracker](./docs/tracking-example.png)
