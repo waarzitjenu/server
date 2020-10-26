@@ -12,9 +12,6 @@ import (
 )
 
 var (
-	// IsDebug tells if the server is running in debug mode, i.e. whether or not to provide output messages.
-	IsDebug      bool // TODO: Move exported var to main.go
-	serverPort   uint
 	settingsFile string
 )
 
@@ -48,14 +45,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	serverPort = configFile.Port
-	IsDebug = configFile.Debug
-
 	db, err := database.OpenDB("./database", "locations.db")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	server.SetEnvironment(IsDebug)
-	defer server.Listen(serverPort, db)
+	defer server.Listen(configFile, db)
 }

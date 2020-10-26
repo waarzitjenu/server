@@ -3,8 +3,11 @@ package types
 
 // Config contains the possible configuration parameters that are available in the settings.json file.
 type Config struct {
-	Port  uint `json:"port"`
-	Debug bool `json:"debug"`
+	Port  uint   `json:"port"`
+	Debug bool   `json:"debug"`
+	NoTLS bool   `json:"notls"`
+	CRT   string `json:"crt"`
+	KEY   string `json:"key"`
 }
 
 // LocationUpdate contains the location update data types as retrieved from the OsmAnd app by default

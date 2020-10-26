@@ -11,24 +11,21 @@ import (
 	"runtime"
 	"strconv"
 
+	"crypto/tls"
+	"github.com/asdine/storm"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
-
-	"github.com/asdine/storm"
 )
 
 var (
-	// IsDebug tells if the server is running in debug mode, i.e. whether or not to provide output messages.
-	IsDebug bool // TODO: Move exported var to main.go
-
 	lastDatabaseAddition [1]types.Entry
 	serverIdentifier     string = fmt.Sprintf("%s on %s %s", runtime.Version(), runtime.GOOS, runtime.GOARCH)
 )
 
 // Listen spins up a webserver and listens for incoming connections
-func Listen(port uint, db *storm.DB) {
+func Listen(config *types.Config, db *storm.DB) {
 
-	if IsDebug {
+	if config.Debug {
 		gin.SetMode(gin.DebugMode)
 	} else {
 		gin.SetMode(gin.ReleaseMode)
@@ -36,7 +33,7 @@ func Listen(port uint, db *storm.DB) {
 
 	ginEngine := gin.New()        // Creates a router without any middleware by default
 	ginEngine.Use(gin.Recovery()) // Recovery middleware recovers from any panics and writes a 500 if there was one.
-	if IsDebug {
+	if config.Debug {
 		ginEngine.Use(gin.Logger())
 	} // Only print access logs when debug mode is active.
 
@@ -62,7 +59,7 @@ func Listen(port uint, db *storm.DB) {
 		if len(c.Request.URL.Query().Get("count")) >= 1 {
 			parsedCountValue, err := strconv.ParseUint(c.Request.URL.Query().Get("count"), 10, 16)
 			if err != nil {
-				if IsDebug {
+				if config.Debug {
 					log.Println("Error parsing query parameter 'count'", err)
 				}
 			} else {
@@ -76,7 +73,7 @@ func Listen(port uint, db *storm.DB) {
 		)
 
 		if cnt > 1 {
-			if IsDebug {
+			if config.Debug {
 				log.Println("Fetching last location entry from database")
 			}
 			db.All(&entries, storm.Limit(int(cnt)), storm.Reverse())
@@ -86,7 +83,7 @@ func Listen(port uint, db *storm.DB) {
 			}
 			responseData = res
 		} else {
-			if IsDebug {
+			if config.Debug {
 				log.Println("Fetching last location entry from memory")
 			}
 			res, err := json.Marshal(lastDatabaseAddition)
@@ -141,7 +138,7 @@ func Listen(port uint, db *storm.DB) {
 		lastDatabaseAddition[0] = entry
 	})
 
-	if IsDebug {
+	if config.Debug {
 		log.Println("Fetching last location entry from database to place it in memory")
 	}
 
@@ -151,20 +148,38 @@ func Listen(port uint, db *storm.DB) {
 		log.Fatal("Processing last entry from database failed", dbErr)
 	}
 
-	var listenAddr string = fmt.Sprintf(":%d", port)
-	if IsDebug {
-		log.Printf("Starting server on port %v\n", port)
+	var listenAddr string = fmt.Sprintf(":%d", config.Port)
+	if config.Debug {
+		log.Printf("Starting server on port %v\n", config.Port)
 	}
 
-	err := http.ListenAndServe(listenAddr, ginEngine)
+	var err error
+	server := http.Server{
+		Addr:    listenAddr,
+		Handler: ginEngine,
+	}
+
+	if !config.NoTLS {
+		tlsConfig := &tls.Config{
+			MinVersion:       tls.VersionTLS12,
+			CurvePreferences: []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
+		}
+
+		server.TLSConfig = tlsConfig
+
+		// validate if the crt & key is added
+		if len(config.CRT) == 0 || len(config.CRT) == 0 {
+			log.Fatal("invalid crt, Please add the TLS certificate and key!")
+		}
+
+		err = server.ListenAndServeTLS(config.CRT, config.KEY)
+	} else {
+		err = server.ListenAndServe()
+	}
+
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	defer db.Close()
-}
-
-// SetEnvironment sets IsDebug to a given value.
-func SetEnvironment(status bool) {
-	IsDebug = status // TODO: IsDebug is an exported value, this might be unnecessary code.
 }
