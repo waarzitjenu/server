@@ -11,15 +11,22 @@ import (
 	"log"
 )
 
-var (
-	settingsFile string
-)
-
 const (
 	settingFileDescription = "The settings file used to run the application. with configuration port and etc."
 	defaultSettingsFile    = "settings.json"
-	defaultServerPort      = 8080
-	defaultDebugStatus     = false
+)
+
+var (
+	settingsFile         string
+	defaultConfiguration types.Config = types.Config{
+		Debug: true,
+		ServerConfiguration: types.ServerConfiguration{
+			Port: 8080,
+			TLS: types.TLS{
+				Enabled: false,
+			},
+		},
+	}
 )
 
 func main() {
@@ -29,11 +36,8 @@ func main() {
 
 	// Create settings file if config not passed, not exists or corrupted
 	if !auxiliary.IsFlagPassed("config") && (!filesystem.DoesDirExist(settingsFile) || settings.IsCorrupted(settingsFile)) {
-		config := types.Config{
-			Port:  defaultServerPort,
-			Debug: defaultDebugStatus,
-		}
 		log.Printf("Initialising settings file %s\n", settingsFile)
+		config := defaultConfiguration
 		err := settings.Write(settingsFile, &config)
 		if err != nil {
 			log.Printf("Error writing settings file: %s\n", err)

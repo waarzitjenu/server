@@ -48,7 +48,7 @@ func Read(filename string) (*types.Config, error) {
 	}
 
 	// Validate entered port
-	if configFile.Port == 0 {
+	if configFile.ServerConfiguration.Port == 0 {
 		return nil, errInvalidPort
 	}
 

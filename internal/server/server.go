@@ -12,6 +12,7 @@ import (
 	"strconv"
 
 	"crypto/tls"
+
 	"github.com/asdine/storm"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
@@ -60,7 +61,7 @@ func Listen(config *types.Config, db *storm.DB) {
 			parsedCountValue, err := strconv.ParseUint(c.Request.URL.Query().Get("count"), 10, 16)
 			if err != nil {
 				if config.Debug {
-					log.Println("Error parsing query parameter 'count'", err)
+					log.Println("[ERROR] Error parsing query parameter 'count'", err)
 				}
 			} else {
 				cnt = uint16(parsedCountValue)
@@ -74,21 +75,21 @@ func Listen(config *types.Config, db *storm.DB) {
 
 		if cnt > 1 {
 			if config.Debug {
-				log.Println("Fetching last location entry from database")
+				log.Println("[INFO] Fetching last location entry from database")
 			}
 			db.All(&entries, storm.Limit(int(cnt)), storm.Reverse())
 			res, err := json.Marshal(entries)
 			if err != nil {
-				log.Fatal("Processing entries from database failed", err)
+				log.Fatal("[FATAL] Processing entries from database failed", err)
 			}
 			responseData = res
 		} else {
 			if config.Debug {
-				log.Println("Fetching last location entry from memory")
+				log.Println("[INFO] Fetching last location entry from memory")
 			}
 			res, err := json.Marshal(lastDatabaseAddition)
 			if err != nil {
-				log.Fatal("Processing last entry from memory failed", err)
+				log.Fatal("[FATAL] Processing last entry from memory failed", err)
 			}
 			responseData = res
 		}
@@ -102,7 +103,6 @@ func Listen(config *types.Config, db *storm.DB) {
 		c.Header("Content-Type", "application/json")
 		c.Writer.WriteHeader(204) // The server successfully processed the request, and is not returning any content.
 
-		// TODO: Error handling
 		retrievedLatitude, _ := strconv.ParseFloat(c.Request.URL.Query().Get("lat"), 64)
 		retrievedLongitude, _ := strconv.ParseFloat(c.Request.URL.Query().Get("lon"), 64)
 		retrievedTimestamp, _ := strconv.ParseUint(c.Request.URL.Query().Get("timestamp"), 10, 64)
@@ -139,18 +139,19 @@ func Listen(config *types.Config, db *storm.DB) {
 	})
 
 	if config.Debug {
-		log.Println("Fetching last location entry from database to place it in memory")
+		log.Println("[INFO] Fetching last location entry from database to place it in memory")
 	}
 
 	db.All(&lastDatabaseAddition, storm.Limit(int(1)), storm.Reverse())
 	_, dbErr := json.Marshal(lastDatabaseAddition)
 	if dbErr != nil {
-		log.Fatal("Processing last entry from database failed", dbErr)
+		log.Fatal("[FATAL] Processing last entry from database failed", dbErr)
 	}
 
-	var listenAddr string = fmt.Sprintf(":%d", config.Port)
+	var listenAddr string = fmt.Sprintf(":%d", config.ServerConfiguration.Port)
 	if config.Debug {
-		log.Printf("Starting server on port %v\n", config.Port)
+		log.Println("[WARNING] Debug mode is enabled. Disable it in production environments to prevent logging sensitive data.")
+		log.Printf("[INFO] Starting server on port %v\n", config.ServerConfiguration.Port)
 	}
 
 	var err error
@@ -159,7 +160,7 @@ func Listen(config *types.Config, db *storm.DB) {
 		Handler: ginEngine,
 	}
 
-	if !config.NoTLS {
+	if config.ServerConfiguration.TLS.Enabled {
 		tlsConfig := &tls.Config{
 			MinVersion:       tls.VersionTLS12,
 			CurvePreferences: []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
@@ -168,12 +169,15 @@ func Listen(config *types.Config, db *storm.DB) {
 		server.TLSConfig = tlsConfig
 
 		// validate if the crt & key is added
-		if len(config.CRT) == 0 || len(config.CRT) == 0 {
-			log.Fatal("invalid crt, Please add the TLS certificate and key!")
+		if len(config.ServerConfiguration.TLS.Certificate.PublicKey) == 0 || len(config.ServerConfiguration.TLS.Certificate.PublicKey) == 0 {
+			log.Fatal("[FATAL] Invalid certificate. Please define the TLS certificate and key in settings.json!")
 		}
 
-		err = server.ListenAndServeTLS(config.CRT, config.KEY)
+		err = server.ListenAndServeTLS(config.ServerConfiguration.TLS.Certificate.PublicKey, config.ServerConfiguration.TLS.Certificate.PrivateKey)
 	} else {
+		if config.Debug {
+			log.Println(`[WARNING] Please note that the server is running without SSL/TLS security. It is highly recommended to enable it in production environments. Refer to the project documentation to learn how to set up TLS.`)
+		}
 		err = server.ListenAndServe()
 	}
 
