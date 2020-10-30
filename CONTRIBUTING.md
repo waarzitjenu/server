@@ -13,3 +13,6 @@ Looking to contribute to this repository, perhaps because you're a participant o
   - An **improvement** is something that **currently works** but could be done in a better way. Something that needs to be **improved**. An improvement does not change the overall behaviour of the application. Like [using gin-gonic/gin instead of net/http (#17)](https://github.com/ricardobalk/go-osmand-tracker/pull/17).
   - An **enhancement** is something that doesn't yet exist, like a new feature. Something that needs to be added to the application in order to **enhance** it. An enhancement changes the behaviour of the application. Like [saving tracks to a database (#3)](https://github.com/ricardobalk/go-osmand-tracker/issues/3).
 - If you have any question, feel free to open an issue and give it the label `question`.
+
+[kan-ban board]: https://github.com/ricardobalk/go-osmand-tracker/projects/1	"Who's working on what?"
+[open issues]: https://github.com/ricardobalk/go-osmand-tracker/issues?q=is%3Aissue+is%3Aopen	"Open issues"
