@@ -5,6 +5,7 @@ import (
 	"flag"
 )
 
+// IsFlagPassed checks if a given flag is used via the CLI and returns a boolean with the value true when the flag has been passed.
 func IsFlagPassed(name string) bool {
 	// falg.Visit shall be called after flags is parsed
 	if !flag.Parsed() {
