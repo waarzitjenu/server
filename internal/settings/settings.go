@@ -17,7 +17,6 @@ var (
 // Read reads the configuration file, validates it and returns it.
 func Read(filename string) (*types.Config, error) {
 	settingsFile, err := os.Open(filename)
-
 	if err != nil {
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
@@ -31,13 +30,11 @@ func Read(filename string) (*types.Config, error) {
 	}
 
 	byteValue, err := ioutil.ReadAll(settingsFile)
-
 	if err != nil {
 		return nil, err
 	}
 
 	err = settingsFile.Close()
-
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +42,6 @@ func Read(filename string) (*types.Config, error) {
 	var configFile types.Config
 
 	err = json.Unmarshal(byteValue, &configFile)
-
 	if err != nil {
 		return nil, err
 	}
