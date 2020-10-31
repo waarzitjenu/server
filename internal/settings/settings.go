@@ -20,8 +20,11 @@ func Read(filename string) (*types.Config, error) {
 
 	if err != nil {
 		homeDir, err := os.UserHomeDir()
-		settingsFile, err = os.Open(homeDir + "/" + filename)
+		if err != nil {
+			return nil, err
+		}
 
+		settingsFile, err = os.Open(homeDir + "/" + filename)
 		if err != nil {
 			return nil, err
 		}
