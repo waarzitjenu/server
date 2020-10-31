@@ -17,24 +17,24 @@ var (
 // Read reads the configuration file, validates it and returns it.
 func Read(filename string) (*types.Config, error) {
 	settingsFile, err := os.Open(filename)
-
 	if err != nil {
 		homeDir, err := os.UserHomeDir()
-		settingsFile, err = os.Open(homeDir + "/" + filename)
+		if err != nil {
+			return nil, err
+		}
 
+		settingsFile, err = os.Open(homeDir + "/" + filename)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	byteValue, err := ioutil.ReadAll(settingsFile)
-
 	if err != nil {
 		return nil, err
 	}
 
 	err = settingsFile.Close()
-
 	if err != nil {
 		return nil, err
 	}
@@ -42,13 +42,12 @@ func Read(filename string) (*types.Config, error) {
 	var configFile types.Config
 
 	err = json.Unmarshal(byteValue, &configFile)
-
 	if err != nil {
 		return nil, err
 	}
 
 	// Validate entered port
-	if configFile.Port == 0 {
+	if configFile.ServerConfiguration.Port == 0 {
 		return nil, errInvalidPort
 	}
 
