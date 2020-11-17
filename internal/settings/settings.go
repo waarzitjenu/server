@@ -4,10 +4,12 @@ package settings
 import (
 	"encoding/json"
 	"errors"
-	"go-osmand-tracker/internal/types"
 	"io/ioutil"
 	"log"
 	"os"
+
+	"github.com/waarzitjenu/database/filesystem"
+	"github.com/waarzitjenu/database/types"
 )
 
 var (
@@ -75,6 +77,10 @@ func Write(filename string, config *types.Config) error {
 
 // IsCorrupted checks the configuration file for corruption and/or invalid values, it returns true in case the settings file is corrupted.
 func IsCorrupted(filename string) bool {
+	if !filesystem.DoesDirExist(filename) {
+		return true
+	}
+
 	b, err := Read(filename)
 
 	// should be corrupted if empty or invalid port
@@ -84,3 +90,5 @@ func IsCorrupted(filename string) bool {
 
 	return false
 }
+
+//
