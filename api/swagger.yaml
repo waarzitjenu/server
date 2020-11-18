@@ -1,18 +1,18 @@
 openapi: 3.0.1
 info:
-  title: go-osmand-tracker
+  title: waarzitjenu/server
   description: >-
-    This is the API specification of the go-osmand-tracker app, an app built to
+    This is the API specification of waarzitjenu/server, an app built to
     receive location updates from the OsmAnd app on iOS and Android devices.
     <br><br> The location tracker is not limited to OsmAnd, it is also possible
     to submit and retrieve location updates from other sources.
   license:
     name: EUPL v1.2
-    url: 'https://github.com/ricardobalk/go-osmand-tracker/blob/develop/LICENSE.txt'
+    url: 'https://github.com/waarzitjenu/server/blob/master/LICENSE.txt'
   version: 1.1.0
 externalDocs:
   description: View the source code on GitHub
-  url: 'https://github.com/ricardobalk/go-osmand-tracker'
+  url: 'https://github.com/waarzitjenu/server'
 tags:
   - name: tracking
     description: Submitting and retrieving location updates

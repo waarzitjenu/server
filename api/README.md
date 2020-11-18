@@ -1,6 +1,6 @@
 # Interacting with the API
 
-Interacting with the `go-osmand-tracker` API endpoint is very easy. Simplicity is king.
+Interacting with the `waarzitjenu/server` API endpoint is very easy. Simplicity is king.
 
 ## Getting started: Basic interaction examples
 
@@ -117,4 +117,4 @@ docker run -d -p 80:8080 swaggerapi/swagger-editor
 
 After this, the Swagger Editor should be available at https://localhost/.
 
-[Postman collection]: https://documenter.getpostman.com/view/5679145/TVRhbpN8 "The Postman collection for go-osmand-tracker"
+[Postman collection]: https://documenter.getpostman.com/view/5679145/TVRhbpN8 "The Postman collection for waarzitjenu/server"

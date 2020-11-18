@@ -1,7 +1,0 @@
-# Type definitions
-
-Package `types` contains the type definitions used in this application. It is split into components.
-
-- application: All types used within the application, not otherwise specified.
-- configuration: All types used in the configuration (settings file).
-- database: All types used for the database.
