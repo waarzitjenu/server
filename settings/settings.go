@@ -8,8 +8,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/waarzitjenu/database/filesystem"
-	"github.com/waarzitjenu/database/types"
+	"github.com/waarzitjenu/server/filesystem"
+	"github.com/waarzitjenu/server/types"
 )
 
 var (
