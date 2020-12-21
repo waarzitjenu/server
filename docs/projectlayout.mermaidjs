@@ -1,0 +1,20 @@
+graph TB
+    subgraph "back-end"
+      A[waarzitjenu/server]
+      B[database]
+      C[auth]
+      D[engine]
+      E[filesystem]
+      F[settings]
+      T[types]
+    end
+
+    subgraph "front-end"
+      X(waarzitjenu/map)
+    end
+
+A --> D
+
+D --> B & C & E & F
+B & C & E & F ---> T
+X <--> A
