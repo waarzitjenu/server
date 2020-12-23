@@ -8,8 +8,8 @@ import (
 
 	"github.com/asdine/storm"
 
-	"github.com/waarzitjenu/server/filesystem"
-	"github.com/waarzitjenu/server/types"
+	"github.com/waarzitjenu/server/internal/filesystem"
+	"github.com/waarzitjenu/server/internal/types"
 )
 
 var (

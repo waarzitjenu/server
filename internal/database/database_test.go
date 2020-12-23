@@ -10,7 +10,7 @@ import (
 
 	"github.com/asdine/storm"
 	"github.com/stretchr/testify/require"
-	"github.com/waarzitjenu/server/types"
+	"github.com/waarzitjenu/server/internal/types"
 )
 
 var (

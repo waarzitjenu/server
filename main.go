@@ -5,10 +5,10 @@ import (
 
 	"log"
 
-	"github.com/waarzitjenu/server/database"
-	"github.com/waarzitjenu/server/engine"
-	"github.com/waarzitjenu/server/settings"
-	"github.com/waarzitjenu/server/types"
+	"github.com/waarzitjenu/server/internal/database"
+	"github.com/waarzitjenu/server/internal/engine"
+	"github.com/waarzitjenu/server/internal/settings"
+	"github.com/waarzitjenu/server/internal/types"
 )
 
 const (
