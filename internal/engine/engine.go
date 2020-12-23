@@ -12,9 +12,9 @@ import (
 
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
-	"github.com/waarzitjenu/server/database"
-	"github.com/waarzitjenu/server/filesystem"
-	"github.com/waarzitjenu/server/types"
+	"github.com/waarzitjenu/server/internal/database"
+	"github.com/waarzitjenu/server/internal/filesystem"
+	"github.com/waarzitjenu/server/internal/types"
 )
 
 var (
