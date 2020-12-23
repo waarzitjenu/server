@@ -2,6 +2,7 @@
 
 Waarzitje.nu is a basic application for submitting and retrieving live location updates. Originally focused on OsmAnd, but basically any application that supports REST could use it.
 
+[![CI Build Status](https://travis-ci.org/waarzitjenu/server.svg?branch=develop)](https://travis-ci.org/waarzitjenu/server)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/waarzitjenu/server)](https://pkg.go.dev/github.com/waarzitjenu/server)
 [![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/waarzitjenu/server?color=%2300aa00)](./go.mod)
 [![Go Report Card](https://goreportcard.com/badge/github.com/waarzitjenu/server)](https://goreportcard.com/report/github.com/waarzitjenu/server)
