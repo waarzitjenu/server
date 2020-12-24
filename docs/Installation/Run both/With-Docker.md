@@ -47,7 +47,7 @@ The front-end needs to be built first, so the back-end could serve the front-end
   - Let's build the image. Go will run, fetch all dependencies, do some checks, etc.
 
     ```sh
-    docker build -t waarzitjenu/server .
+    docker build -t waarzitjenu-server .
     ```
 
   - Now, we need to run the created Docker image in a container. We need to attach a read-only volume of the front-end map interface and we need to attach the database volume we just created.
@@ -57,7 +57,7 @@ The front-end needs to be built first, so the back-end could serve the front-end
       --mount 'type=volume,src=waarzitjenu-map,dst=/go/src/waarzitjenu/server/web/dist,ro' \
       --mount 'type=volume,src=waarzitjenu-server-db,dst=/go/src/waarzitjenu/server/database/' \
       -p 8080:8080 \
-      waarzitjenu/server
+      waarzitjenu-server
     ```
 
   - Done! Both the API and map interface should be available at http://localhost:8080/. To change the port to 3000, use `-p 3000:8080` instead of `-p 8080:8080`.

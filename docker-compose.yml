@@ -1,18 +1,18 @@
 version: "3.8"
 services:
-    waarzitjenu/map:
+    waarzitjenu-map:
         build:
           context: ./web/
           dockerfile: Dockerfile
         volumes:
             - waarzitjenu-map:/home/node/waarzitjenu/map/dist
 
-    waarzitjenu/server:
+    waarzitjenu-server:
         build: .
         ports:
             - 8080:8080
         links:
-            - waarzitjenu/map
+            - waarzitjenu-map
         volumes:
             - waarzitjenu-server-db:/go/src/waarzitjenu/server/database/
             - waarzitjenu-map:/go/src/waarzitjenu/server/web/dist:ro

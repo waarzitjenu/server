@@ -17,7 +17,7 @@ These instructions use Docker. If you are interested in running the back-end **w
   - Let's build the image. Go will run, fetch all dependencies, do some checks, etc.
 
     ```sh
-    docker build -t waarzitjenu/server .
+    docker build -t waarzitjenu-server .
     ```
 
   - Now, we need to run the created Docker image in a container. We to attach the database volume we just created.
@@ -26,7 +26,7 @@ These instructions use Docker. If you are interested in running the back-end **w
     docker run --rm \
       --mount 'type=volume,src=go-osmand-tracker-apidb,dst=/go/src/waarzitjenu/server/database/' \
       -p 8080:8080 \
-      waarzitjenu/server
+      waarzitjenu-server
     ```
 
   - Done! The API should be available at http://localhost:8080/. To change the port to 3000, use `-p 3000:8080` instead of `-p 8080:8080`.
