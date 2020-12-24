@@ -1,2 +1,2 @@
-// Package authentication handles all authentication functionalities.
+// Package auth handles all authentication functionalities.
 package auth
