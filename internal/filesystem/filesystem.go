@@ -29,9 +29,8 @@ func CreateDirIfNotExist(dir string) error {
 func DeleteFile(target string, backup bool) error {
 	if backup {
 		return os.Rename(target, target+".bak")
-	} else {
-		return os.Remove(target)
 	}
+	return os.Remove(target)
 }
 
 // DeleteDirectory deletes an entire directory.
