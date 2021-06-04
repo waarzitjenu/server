@@ -10,10 +10,8 @@ import (
 	"runtime"
 	"strconv"
 
-	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/waarzitjenu/server/internal/database"
-	"github.com/waarzitjenu/server/internal/filesystem"
 	"github.com/waarzitjenu/server/internal/types"
 )
 
@@ -37,17 +35,6 @@ func Listen(config *types.Config) {
 	if config.Debug {
 		ginEngine.Use(gin.Logger())
 	} // Only print access logs when debug mode is active.
-
-	if filesystem.DoesDirExist("./web/dist") {
-		ginEngine.Use(static.Serve("/", static.LocalFile("./web/dist", false)))
-	} else {
-		ginEngine.GET("/", func(c *gin.Context) {
-			c.Header("Server", ServerIdentifier)
-			c.Header("Content-Type", "text/plain")
-			c.Writer.WriteHeader(501)
-			c.String(http.StatusNotImplemented, "Sorry, %s is not implemented.", c.Request.RequestURI)
-		})
-	}
 
 	ginEngine.GET("/retrieve", func(c *gin.Context) {
 		c.Header("Server", ServerIdentifier)
