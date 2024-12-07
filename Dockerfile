@@ -1,4 +1,4 @@
-FROM golang:1.14
+FROM golang:1.23.4
 
 WORKDIR /go/src/waarzitjenu/server
 
